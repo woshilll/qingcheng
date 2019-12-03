@@ -32,4 +32,16 @@ public interface CategoryService {
 
     public void delete(Integer id);
 
+    List<Map> findCategoryTree();
+
+    /**
+     * 将首页所用的分类树放置到缓存里
+     */
+    void saveCategoryTreeToRedis();
+
+    /**
+     * 将所有的分类放到缓存中
+     */
+    void saveAllCategoryToRedis();
+
 }

@@ -22,6 +22,7 @@ public class ReturnCauseServiceImpl implements ReturnCauseService {
      * 返回全部记录
      * @return
      */
+    @Override
     public List<ReturnCause> findAll() {
         return returnCauseMapper.selectAll();
     }
@@ -32,6 +33,7 @@ public class ReturnCauseServiceImpl implements ReturnCauseService {
      * @param size 每页记录数
      * @return 分页结果
      */
+    @Override
     public PageResult<ReturnCause> findPage(int page, int size) {
         PageHelper.startPage(page,size);
         Page<ReturnCause> returnCauses = (Page<ReturnCause>) returnCauseMapper.selectAll();
@@ -43,6 +45,7 @@ public class ReturnCauseServiceImpl implements ReturnCauseService {
      * @param searchMap 查询条件
      * @return
      */
+    @Override
     public List<ReturnCause> findList(Map<String, Object> searchMap) {
         Example example = createExample(searchMap);
         return returnCauseMapper.selectByExample(example);
@@ -55,6 +58,7 @@ public class ReturnCauseServiceImpl implements ReturnCauseService {
      * @param size
      * @return
      */
+    @Override
     public PageResult<ReturnCause> findPage(Map<String, Object> searchMap, int page, int size) {
         PageHelper.startPage(page,size);
         Example example = createExample(searchMap);
@@ -67,6 +71,7 @@ public class ReturnCauseServiceImpl implements ReturnCauseService {
      * @param id
      * @return
      */
+    @Override
     public ReturnCause findById(Integer id) {
         return returnCauseMapper.selectByPrimaryKey(id);
     }
@@ -75,6 +80,7 @@ public class ReturnCauseServiceImpl implements ReturnCauseService {
      * 新增
      * @param returnCause
      */
+    @Override
     public void add(ReturnCause returnCause) {
         returnCauseMapper.insert(returnCause);
     }
@@ -83,6 +89,7 @@ public class ReturnCauseServiceImpl implements ReturnCauseService {
      * 修改
      * @param returnCause
      */
+    @Override
     public void update(ReturnCause returnCause) {
         returnCauseMapper.updateByPrimaryKeySelective(returnCause);
     }
@@ -91,6 +98,7 @@ public class ReturnCauseServiceImpl implements ReturnCauseService {
      *  删除
      * @param id
      */
+    @Override
     public void delete(Integer id) {
         returnCauseMapper.deleteByPrimaryKey(id);
     }

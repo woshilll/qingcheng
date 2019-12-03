@@ -32,4 +32,10 @@ public interface AdService {
 
     public void delete(Integer id);
 
+    List<Ad> findByPosition(String position);
+
+    void saveAdToRedisByPosition(String position);
+
+    void saveAllAdsToRedis();
+
 }

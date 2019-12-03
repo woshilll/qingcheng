@@ -95,6 +95,10 @@ public class AdminServiceImpl implements AdminService {
         adminMapper.deleteByPrimaryKey(id);
     }
 
+    public void updatePwd(Admin admin) {
+        adminMapper.updateByPrimaryKeySelective(admin);
+    }
+
     /**
      * 构建查询条件
      * @param searchMap
@@ -106,7 +110,7 @@ public class AdminServiceImpl implements AdminService {
         if(searchMap!=null){
             // 用户名
             if(searchMap.get("loginName")!=null && !"".equals(searchMap.get("loginName"))){
-                criteria.andLike("loginName","%"+searchMap.get("loginName")+"%");
+                criteria.andEqualTo("loginName",searchMap.get("loginName"));
             }
             // 密码
             if(searchMap.get("password")!=null && !"".equals(searchMap.get("password"))){
@@ -114,7 +118,7 @@ public class AdminServiceImpl implements AdminService {
             }
             // 状态
             if(searchMap.get("status")!=null && !"".equals(searchMap.get("status"))){
-                criteria.andLike("status","%"+searchMap.get("status")+"%");
+                criteria.andEqualTo("status",searchMap.get("status"));
             }
 
             // id

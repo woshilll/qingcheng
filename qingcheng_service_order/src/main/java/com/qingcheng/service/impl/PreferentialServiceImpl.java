@@ -9,6 +9,7 @@ import com.qingcheng.service.order.PreferentialService;
 import org.springframework.beans.factory.annotation.Autowired;
 import tk.mybatis.mapper.entity.Example;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +23,7 @@ public class PreferentialServiceImpl implements PreferentialService {
      * 返回全部记录
      * @return
      */
+    @Override
     public List<Preferential> findAll() {
         return preferentialMapper.selectAll();
     }
@@ -32,6 +34,7 @@ public class PreferentialServiceImpl implements PreferentialService {
      * @param size 每页记录数
      * @return 分页结果
      */
+    @Override
     public PageResult<Preferential> findPage(int page, int size) {
         PageHelper.startPage(page,size);
         Page<Preferential> preferentials = (Page<Preferential>) preferentialMapper.selectAll();
@@ -43,6 +46,7 @@ public class PreferentialServiceImpl implements PreferentialService {
      * @param searchMap 查询条件
      * @return
      */
+    @Override
     public List<Preferential> findList(Map<String, Object> searchMap) {
         Example example = createExample(searchMap);
         return preferentialMapper.selectByExample(example);
@@ -55,6 +59,7 @@ public class PreferentialServiceImpl implements PreferentialService {
      * @param size
      * @return
      */
+    @Override
     public PageResult<Preferential> findPage(Map<String, Object> searchMap, int page, int size) {
         PageHelper.startPage(page,size);
         Example example = createExample(searchMap);
@@ -67,6 +72,7 @@ public class PreferentialServiceImpl implements PreferentialService {
      * @param id
      * @return
      */
+    @Override
     public Preferential findById(Integer id) {
         return preferentialMapper.selectByPrimaryKey(id);
     }
@@ -75,6 +81,7 @@ public class PreferentialServiceImpl implements PreferentialService {
      * 新增
      * @param preferential
      */
+    @Override
     public void add(Preferential preferential) {
         preferentialMapper.insert(preferential);
     }
@@ -83,6 +90,7 @@ public class PreferentialServiceImpl implements PreferentialService {
      * 修改
      * @param preferential
      */
+    @Override
     public void update(Preferential preferential) {
         preferentialMapper.updateByPrimaryKeySelective(preferential);
     }
@@ -91,8 +99,50 @@ public class PreferentialServiceImpl implements PreferentialService {
      *  删除
      * @param id
      */
+    @Override
     public void delete(Integer id) {
         preferentialMapper.deleteByPrimaryKey(id);
+    }
+
+    /**
+     * 通过分类查找优惠金额
+     * @param categoryId
+     * @param money
+     * @return
+     */
+    @Override
+    public int findPreMoneyByCategoryId(Integer categoryId, int money) {
+        Example example = new Example(Preferential.class);
+        /*
+        状态为1
+        money大于等于优惠
+        结束时间大于当前时间
+        开始时间小于当前时间
+         */
+        example.createCriteria().andEqualTo("state", "1")
+                .andEqualTo("categoryId", categoryId)
+                .andLessThanOrEqualTo("buyMoney", money)
+                .andGreaterThanOrEqualTo("endTime", new Date())
+                .andLessThanOrEqualTo("startTime", new Date());
+        //降序
+        example.setOrderByClause("buy_money desc");
+        List<Preferential> preferentials = preferentialMapper.selectByExample(example);
+        //有优惠
+        if (preferentials.size() >= 1) {
+            Preferential preferential = preferentials.get(0);
+            //优惠不翻倍
+            if ("1".equals(preferential.getType())) {
+                return preferential.getPreMoney();
+            }else {
+                //优惠翻倍
+                int multi = money / preferential.getBuyMoney();
+                return multi * preferential.getPreMoney();
+            }
+            //没有优惠
+        }else {
+            return 0;
+        }
+
     }
 
     /**

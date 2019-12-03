@@ -32,4 +32,6 @@ public interface AdminService {
 
     public void delete(Integer id);
 
+    void updatePwd(Admin admin);
+
 }

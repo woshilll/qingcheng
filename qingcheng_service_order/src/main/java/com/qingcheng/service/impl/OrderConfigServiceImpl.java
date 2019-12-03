@@ -22,6 +22,7 @@ public class OrderConfigServiceImpl implements OrderConfigService {
      * 返回全部记录
      * @return
      */
+    @Override
     public List<OrderConfig> findAll() {
         return orderConfigMapper.selectAll();
     }
@@ -32,6 +33,7 @@ public class OrderConfigServiceImpl implements OrderConfigService {
      * @param size 每页记录数
      * @return 分页结果
      */
+    @Override
     public PageResult<OrderConfig> findPage(int page, int size) {
         PageHelper.startPage(page,size);
         Page<OrderConfig> orderConfigs = (Page<OrderConfig>) orderConfigMapper.selectAll();
@@ -43,6 +45,7 @@ public class OrderConfigServiceImpl implements OrderConfigService {
      * @param searchMap 查询条件
      * @return
      */
+    @Override
     public List<OrderConfig> findList(Map<String, Object> searchMap) {
         Example example = createExample(searchMap);
         return orderConfigMapper.selectByExample(example);
@@ -55,6 +58,7 @@ public class OrderConfigServiceImpl implements OrderConfigService {
      * @param size
      * @return
      */
+    @Override
     public PageResult<OrderConfig> findPage(Map<String, Object> searchMap, int page, int size) {
         PageHelper.startPage(page,size);
         Example example = createExample(searchMap);
@@ -67,6 +71,7 @@ public class OrderConfigServiceImpl implements OrderConfigService {
      * @param id
      * @return
      */
+    @Override
     public OrderConfig findById(Integer id) {
         return orderConfigMapper.selectByPrimaryKey(id);
     }
@@ -75,6 +80,7 @@ public class OrderConfigServiceImpl implements OrderConfigService {
      * 新增
      * @param orderConfig
      */
+    @Override
     public void add(OrderConfig orderConfig) {
         orderConfigMapper.insert(orderConfig);
     }
@@ -83,6 +89,7 @@ public class OrderConfigServiceImpl implements OrderConfigService {
      * 修改
      * @param orderConfig
      */
+    @Override
     public void update(OrderConfig orderConfig) {
         orderConfigMapper.updateByPrimaryKeySelective(orderConfig);
     }
@@ -91,6 +98,7 @@ public class OrderConfigServiceImpl implements OrderConfigService {
      *  删除
      * @param id
      */
+    @Override
     public void delete(Integer id) {
         orderConfigMapper.deleteByPrimaryKey(id);
     }

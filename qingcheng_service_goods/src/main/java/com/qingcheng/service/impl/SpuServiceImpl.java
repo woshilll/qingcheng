@@ -10,21 +10,23 @@ import com.qingcheng.dao.SkuMapper;
 import com.qingcheng.dao.SpuMapper;
 import com.qingcheng.entity.PageResult;
 import com.qingcheng.pojo.goods.*;
+import com.qingcheng.service.goods.SkuService;
 import com.qingcheng.service.goods.SpuService;
 import com.qingcheng.utils.IdWorker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service(interfaceClass = SpuService.class)
 public class SpuServiceImpl implements SpuService {
 
     @Autowired
     private SpuMapper spuMapper;
+
+    @Autowired
+    private SkuService skuService;
 
     /**
      * 返回全部记录
@@ -174,6 +176,9 @@ public class SpuServiceImpl implements SpuService {
             sku.setCommentNum(0);
             sku.setSaleNum(0);
             skuMapper.insert(sku);
+            //放入缓存
+            skuService.savePriceToRedisById(sku.getId(), sku.getPrice());
+
         }
         CategoryBrand categoryBrand = new CategoryBrand();
         categoryBrand.setCategoryId(spu.getCategory3Id());
@@ -203,6 +208,7 @@ public class SpuServiceImpl implements SpuService {
      * @param status
      * @param message
      */
+    @Transactional(rollbackFor = Exception.class)
     public void audit(String id, String status, String message) {
         Spu spu = new Spu();
         spu.setId(id);
@@ -216,6 +222,81 @@ public class SpuServiceImpl implements SpuService {
         //TODO 商品审核记录
 
         //记录商品日志
+    }
+
+    /**
+     * 商品下架
+     * @param id
+     */
+    public void pull(String id) {
+        Spu spu = new Spu();
+        spu.setId(id);
+        spu.setIsMarketable("0");
+        spuMapper.updateByPrimaryKeySelective(spu);
+        //TODO
+        //记录商品日志
+    }
+
+    public void put(String id) {
+        Spu spu = spuMapper.selectByPrimaryKey(id);
+        if (!"1".equals(spu.getStatus())) {
+            //未通过审核
+            throw new RuntimeException("商品未通过审核");
+        }
+        spu.setIsMarketable("1");
+        spuMapper.updateByPrimaryKeySelective(spu);
+        //TODO
+        //记录商品日志
+    }
+
+    public int putMany(String[] ids) {
+        Spu spu = new Spu();
+        spu.setIsMarketable("1");
+        Example example = new Example(Spu.class);
+        example.createCriteria().andIn("id", Arrays.asList(ids))
+                .andEqualTo("isMarketable", "0")
+                .andEqualTo("status", "1");
+        return spuMapper.updateByExampleSelective(spu, example);
+        //TODO
+        //记录商品日志
+    }
+
+    public int pullMany(String[] ids) {
+        Spu spu = new Spu();
+        spu.setIsMarketable("0");
+        Example example = new Example(Spu.class);
+        example.createCriteria().andIn("id", Arrays.asList(ids))
+                .andEqualTo("isMarketable", "1");
+        return spuMapper.updateByExampleSelective(spu, example);
+        //TODO
+        //记录商品日志
+    }
+
+    public void deleteFalse(String id) {
+        Spu spu = new Spu();
+        spu.setId(id);
+        spu.setIsDelete("1");
+        spuMapper.updateByPrimaryKeySelective(spu);
+        //TODO
+        //记录商品日志
+    }
+
+    public void deleteTrue(String id) {
+        Spu spu = spuMapper.selectByPrimaryKey(id);
+        if (!"1".equals(spu.getIsDelete())) {
+            throw new RuntimeException("无法删除，因为isDelete不为1");
+        }
+        //从缓存中删除
+        Map map = new HashMap();
+        map.put("SpuId", id);
+        List<Sku> skuList = skuService.findList(map);
+        for (Sku sku : skuList) {
+            skuService.removePriceFromRedis(sku.getId());
+        }
+
+
+
+        spuMapper.deleteByPrimaryKey(id);
     }
 
     /**

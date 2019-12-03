@@ -96,6 +96,17 @@ public class AddressServiceImpl implements AddressService {
     }
 
     /**
+     * 通过用户名查找地址
+     * @param username
+     * @return
+     */
+    public List<Address> findAddressList(String username) {
+        Example example = new Example(Address.class);
+        example.createCriteria().andEqualTo("username", username);
+        return addressMapper.selectByExample(example);
+    }
+
+    /**
      * 构建查询条件
      * @param searchMap
      * @return

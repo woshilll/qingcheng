@@ -33,10 +33,62 @@ public interface SpuService {
 
     public void delete(String id);
 
+    /**
+     * 保存
+     * @param goods
+     */
     void save(Goods goods);
 
+    /**
+     * 查找商品
+     * @param id
+     * @return
+     */
     Goods findGoodsById(String id);
 
+    /**
+     * 修改审核状态
+     * @param id
+     * @param status
+     * @param message
+     */
     void audit(String id, String status, String message);
 
+    /**
+     * 商品下架
+     * @param id
+     */
+    void pull(String id);
+
+    /**
+     * 商品上架
+     * @param id
+     */
+    void put(String id);
+
+    /**
+     * 批量上架
+     * @param ids
+     * @return
+     */
+    int putMany(String[] ids);
+
+    /**
+     * 批量下架
+     * @param ids
+     * @return
+     */
+    int pullMany(String[] ids);
+
+    /**
+     * 假删除 将isDelete置为1
+     * @param id
+     */
+    void deleteFalse(String id);
+
+    /**
+     * 真实删除，前提判断isDelete是否为1
+     * @param id
+     */
+    void deleteTrue(String id);
 }

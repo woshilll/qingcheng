@@ -22,6 +22,7 @@ public class OrderItemServiceImpl implements OrderItemService {
      * 返回全部记录
      * @return
      */
+    @Override
     public List<OrderItem> findAll() {
         return orderItemMapper.selectAll();
     }
@@ -32,6 +33,7 @@ public class OrderItemServiceImpl implements OrderItemService {
      * @param size 每页记录数
      * @return 分页结果
      */
+    @Override
     public PageResult<OrderItem> findPage(int page, int size) {
         PageHelper.startPage(page,size);
         Page<OrderItem> orderItems = (Page<OrderItem>) orderItemMapper.selectAll();
@@ -43,6 +45,7 @@ public class OrderItemServiceImpl implements OrderItemService {
      * @param searchMap 查询条件
      * @return
      */
+    @Override
     public List<OrderItem> findList(Map<String, Object> searchMap) {
         Example example = createExample(searchMap);
         return orderItemMapper.selectByExample(example);
@@ -55,6 +58,7 @@ public class OrderItemServiceImpl implements OrderItemService {
      * @param size
      * @return
      */
+    @Override
     public PageResult<OrderItem> findPage(Map<String, Object> searchMap, int page, int size) {
         PageHelper.startPage(page,size);
         Example example = createExample(searchMap);
@@ -67,6 +71,7 @@ public class OrderItemServiceImpl implements OrderItemService {
      * @param id
      * @return
      */
+    @Override
     public OrderItem findById(String id) {
         return orderItemMapper.selectByPrimaryKey(id);
     }
@@ -75,6 +80,7 @@ public class OrderItemServiceImpl implements OrderItemService {
      * 新增
      * @param orderItem
      */
+    @Override
     public void add(OrderItem orderItem) {
         orderItemMapper.insert(orderItem);
     }
@@ -83,6 +89,7 @@ public class OrderItemServiceImpl implements OrderItemService {
      * 修改
      * @param orderItem
      */
+    @Override
     public void update(OrderItem orderItem) {
         orderItemMapper.updateByPrimaryKeySelective(orderItem);
     }
@@ -91,6 +98,7 @@ public class OrderItemServiceImpl implements OrderItemService {
      *  删除
      * @param id
      */
+    @Override
     public void delete(String id) {
         orderItemMapper.deleteByPrimaryKey(id);
     }

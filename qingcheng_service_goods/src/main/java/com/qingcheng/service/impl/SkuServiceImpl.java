@@ -5,14 +5,18 @@ import com.github.pagehelper.PageHelper;
 import com.qingcheng.dao.SkuMapper;
 import com.qingcheng.entity.PageResult;
 import com.qingcheng.pojo.goods.Sku;
+import com.qingcheng.pojo.order.OrderItem;
 import com.qingcheng.service.goods.SkuService;
+import com.qingcheng.utils.CacheKey;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.List;
 import java.util.Map;
 
-@Service
+@Service(interfaceClass = SkuService.class)
 public class SkuServiceImpl implements SkuService {
 
     @Autowired
@@ -93,6 +97,62 @@ public class SkuServiceImpl implements SkuService {
      */
     public void delete(String id) {
         skuMapper.deleteByPrimaryKey(id);
+    }
+
+    @Autowired
+    private RedisTemplate redisTemplate;
+    /**
+     * 将所有sku价格放置到缓存里
+     */
+    public void saveAllPriceToRedis() {
+        if (!redisTemplate.hasKey(CacheKey.SKU_PRICE)) {
+            List<Sku> skus = skuMapper.selectAll();
+            for (Sku sku : skus) {
+                redisTemplate.boundHashOps(CacheKey.SKU_PRICE).put(sku.getId(), sku.getPrice());
+            }
+        }
+    }
+
+    public Integer findPrice(String id) {
+        return (Integer) redisTemplate.boundHashOps(CacheKey.SKU_PRICE).get(id);
+    }
+
+    public void savePriceToRedisById(String id, Integer price) {
+        redisTemplate.boundHashOps(CacheKey.SKU_PRICE).put(id, price);
+    }
+
+    public void removePriceFromRedis(String id) {
+        redisTemplate.boundHashOps(CacheKey.SKU_PRICE).delete(id);
+    }
+
+    /**
+     * 批量扣除库存
+     * @param orderItemList
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public boolean deductionStock(List<OrderItem> orderItemList) {
+        //是否可以扣除库存
+        boolean isDeduction = true;
+        for (OrderItem orderItem : orderItemList) {
+            Sku sku = findById(orderItem.getSkuId());
+            //当商品不存在,或者状态不为一或者商品数量小于购买数量时,不可以执行扣除库存
+            if (sku == null || !"1".equals(sku.getStatus()) || sku.getNum() < orderItem.getNum()) {
+                isDeduction = false;
+                break;
+            }
+        }
+        //可以扣除库存
+        if (isDeduction) {
+            for (OrderItem orderItem : orderItemList) {
+                //扣除库存
+                skuMapper.deductionStock(orderItem.getSkuId(), orderItem.getNum());
+                //增加销量
+                skuMapper.addSaleNum(orderItem.getSkuId(), orderItem.getNum());
+            }
+        }
+
+        return isDeduction;
     }
 
     /**

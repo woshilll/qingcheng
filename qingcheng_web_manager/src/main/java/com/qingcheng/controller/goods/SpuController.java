@@ -72,4 +72,45 @@ public class SpuController {
         return spuService.findGoodsById(id);
     }
 
+
+    @PostMapping("/audit")
+    public Result audit(@RequestBody Map<String, String> map) {
+        spuService.audit(map.get("id"), map.get("status"), map.get("message"));
+        return new Result();
+    }
+
+    @GetMapping("/pull")
+    public Result pull(String id) {
+        spuService.pull(id);
+        return new Result();
+    }
+    @GetMapping("/put")
+    public Result put(String id) {
+        spuService.put(id);
+        return new Result();
+    }
+
+    @GetMapping("/putMany")
+    public Result putMany(String[] ids) {
+        int count = spuService.putMany(ids);
+        return new Result(0, "上架了" + count + "个商品");
+    }
+
+    @GetMapping("/pullMany")
+    public Result pullMany(String[] ids) {
+        int count = spuService.pullMany(ids);
+        return new Result(0, "下架了" + count + "个商品");
+    }
+
+    @GetMapping("/delete1")
+    public Result deleteFalse(String id) {
+        spuService.deleteFalse(id);
+        return new Result();
+    }
+
+    @GetMapping("/delete2")
+    public Result deleteTrue(String id) {
+        spuService.deleteTrue(id);
+        return new Result();
+    }
 }

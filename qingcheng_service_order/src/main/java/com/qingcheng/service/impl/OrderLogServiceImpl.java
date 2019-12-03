@@ -22,6 +22,7 @@ public class OrderLogServiceImpl implements OrderLogService {
      * 返回全部记录
      * @return
      */
+    @Override
     public List<OrderLog> findAll() {
         return orderLogMapper.selectAll();
     }
@@ -32,6 +33,7 @@ public class OrderLogServiceImpl implements OrderLogService {
      * @param size 每页记录数
      * @return 分页结果
      */
+    @Override
     public PageResult<OrderLog> findPage(int page, int size) {
         PageHelper.startPage(page,size);
         Page<OrderLog> orderLogs = (Page<OrderLog>) orderLogMapper.selectAll();
@@ -43,6 +45,7 @@ public class OrderLogServiceImpl implements OrderLogService {
      * @param searchMap 查询条件
      * @return
      */
+    @Override
     public List<OrderLog> findList(Map<String, Object> searchMap) {
         Example example = createExample(searchMap);
         return orderLogMapper.selectByExample(example);
@@ -55,6 +58,7 @@ public class OrderLogServiceImpl implements OrderLogService {
      * @param size
      * @return
      */
+    @Override
     public PageResult<OrderLog> findPage(Map<String, Object> searchMap, int page, int size) {
         PageHelper.startPage(page,size);
         Example example = createExample(searchMap);
@@ -67,6 +71,7 @@ public class OrderLogServiceImpl implements OrderLogService {
      * @param id
      * @return
      */
+    @Override
     public OrderLog findById(String id) {
         return orderLogMapper.selectByPrimaryKey(id);
     }
@@ -75,6 +80,7 @@ public class OrderLogServiceImpl implements OrderLogService {
      * 新增
      * @param orderLog
      */
+    @Override
     public void add(OrderLog orderLog) {
         orderLogMapper.insert(orderLog);
     }
@@ -83,6 +89,7 @@ public class OrderLogServiceImpl implements OrderLogService {
      * 修改
      * @param orderLog
      */
+    @Override
     public void update(OrderLog orderLog) {
         orderLogMapper.updateByPrimaryKeySelective(orderLog);
     }
@@ -91,6 +98,7 @@ public class OrderLogServiceImpl implements OrderLogService {
      *  删除
      * @param id
      */
+    @Override
     public void delete(String id) {
         orderLogMapper.deleteByPrimaryKey(id);
     }

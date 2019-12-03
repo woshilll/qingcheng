@@ -32,4 +32,20 @@ public interface ReturnOrderService {
 
     public void delete(Long id);
 
+    /**
+     * 同意退款
+     * @param id
+     * @param money
+     * @param adminId
+     */
+    void agreeRefund(String id, Integer money, Integer adminId);
+
+
+    /**
+     * 驳回退款请求
+     * @param id
+     * @param remark
+     * @param adminId
+     */
+    void rejectRefund(String id, String remark, Integer adminId);
 }

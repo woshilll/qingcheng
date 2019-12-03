@@ -60,4 +60,30 @@ public class ReturnOrderController {
         return new Result();
     }
 
+    /**
+     * 同意退款
+     * @param id
+     * @param money
+     * @return
+     */
+    public Result agreeRefund(String id, Integer money) {
+        //获取管理员id
+        Integer adminId = 0;
+        returnOrderService.agreeRefund(id,money,adminId);
+        return new Result();
+    }
+
+    /**
+     * 驳回退款
+     * @param id
+     * @param remark
+     * @return
+     */
+    public Result rejectRefund(String id, String remark) {
+        //获取管理员id
+        Integer adminId = 0;
+        returnOrderService.rejectRefund(id,remark,adminId);
+        return new Result();
+    }
+
 }

@@ -6,9 +6,13 @@ import com.qingcheng.dao.CategoryMapper;
 import com.qingcheng.entity.PageResult;
 import com.qingcheng.pojo.goods.Category;
 import com.qingcheng.service.goods.CategoryService;
+import com.qingcheng.utils.CacheKey;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import tk.mybatis.mapper.entity.Example;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +27,7 @@ public class CategoryServiceImpl implements CategoryService {
      * @return
      */
     public List<Category> findAll() {
+
         return categoryMapper.selectAll();
     }
 
@@ -77,6 +82,7 @@ public class CategoryServiceImpl implements CategoryService {
      */
     public void add(Category category) {
         categoryMapper.insert(category);
+        saveCategoryTreeToRedis();
     }
 
     /**
@@ -85,6 +91,7 @@ public class CategoryServiceImpl implements CategoryService {
      */
     public void update(Category category) {
         categoryMapper.updateByPrimaryKeySelective(category);
+        saveCategoryTreeToRedis();
     }
 
     /**
@@ -99,6 +106,56 @@ public class CategoryServiceImpl implements CategoryService {
             throw new RuntimeException("存在下级分类，不能删除");
         }
         categoryMapper.deleteByPrimaryKey(id);
+        saveCategoryTreeToRedis();
+    }
+
+    public List<Map> findCategoryTree() {
+
+        System.out.println("从缓存中获取");
+        return (List<Map>) redisTemplate.boundValueOps(CacheKey.CATEGORY_TREE).get();
+    }
+
+    @Autowired
+    private RedisTemplate redisTemplate;
+
+    /**
+     * 将categoryTree放到redis中去
+     */
+    public void saveCategoryTreeToRedis() {
+        //获取categoryTree
+        Example example = new Example(Category.class);
+        example.createCriteria().andEqualTo("isShow","1");
+        example.setOrderByClause("seq");
+        List<Category> categories = categoryMapper.selectByExample(example);
+        List<Map> categoryTree = findByParentId(categories, 0);
+
+        //放入到redis中
+        redisTemplate.boundValueOps(CacheKey.CATEGORY_TREE).set(categoryTree);
+    }
+
+    /**
+     * 将所有分类放置到缓存
+     */
+    public void saveAllCategoryToRedis() {
+        List<Category> categoryList = findAll();
+        for (Category category : categoryList) {
+            redisTemplate.boundHashOps(CacheKey.CATEGORY).put(category.getId(), category);
+        }
+
+    }
+
+    private List<Map> findByParentId(List<Category> categories, Integer parentId) {
+        List<Map> mapList = new ArrayList<Map>();
+        for (Category category : categories) {
+            if (category.getParentId().equals(parentId)) {
+                Map map = new HashMap();
+                map.put("name", category.getName());
+                map.put("menus",findByParentId(categories, category.getId()));
+                mapList.add(map);
+            }
+
+        }
+        return mapList;
     }
 
     /**

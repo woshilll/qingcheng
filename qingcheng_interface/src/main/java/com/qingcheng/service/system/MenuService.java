@@ -32,4 +32,6 @@ public interface MenuService {
 
     public void delete(String id);
 
+    List<Map<String, Object>> findAllMenu();
+
 }

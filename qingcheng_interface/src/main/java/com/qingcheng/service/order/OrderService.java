@@ -1,6 +1,7 @@
 package com.qingcheng.service.order;
 import com.qingcheng.entity.PageResult;
 import com.qingcheng.pojo.order.Order;
+import com.qingcheng.pojo.order.OrderAndOrderItem;
 
 import java.util.*;
 
@@ -24,7 +25,7 @@ public interface OrderService {
 
     public Order findById(String id);
 
-    public void add(Order order);
+    public Map<String, Object> add(Order order);
 
 
     public void update(Order order);
@@ -32,4 +33,21 @@ public interface OrderService {
 
     public void delete(String id);
 
+    /**
+     * 查询订单的详细信息
+     * @param id
+     * @return
+     */
+    OrderAndOrderItem findAllMsg(String id);
+
+    /**
+     * 批量发货
+     * @param orders
+     */
+    void batchSend(List<Order> orders);
+
+    /**
+     * 订单超时处理
+     */
+    void orderTimeOutLogic();
 }
