@@ -43,7 +43,8 @@ public class CartController {
     @GetMapping("/buy")
     public void buy(HttpServletResponse response, String skuId, Integer num) throws IOException {
         addItem(skuId, num);
-        response.sendRedirect("http://localhost:9102/cart.html");
+//        response.sendRedirect("http://localhost:9102/cart.html");
+        response.sendRedirect("http://qingchengwoshilll.easy.echosite.cn/cart.html");
     }
 
     @GetMapping("/updateChecked")

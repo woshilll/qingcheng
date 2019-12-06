@@ -50,4 +50,11 @@ public interface OrderService {
      * 订单超时处理
      */
     void orderTimeOutLogic();
+
+    /**
+     * 修改订单支付状态
+     * @param orderId
+     * @param transactionId 交易流水号
+     */
+    void updatePayStatus(String orderId, String transactionId);
 }

@@ -10,5 +10,6 @@
 		<constructor-arg index="1" value="1"/>
 
 	</bean>
+	<bean id="wxPayConfig" class="com.qingcheng.config.MyWXPayConfig"/>
 
 </beans>

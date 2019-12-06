@@ -7,9 +7,10 @@
              xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 
 
-    <http pattern="/index.do" security="none"></http>
-    <http pattern="/search.do" security="none"></http>
-    <http pattern="/register.html" security="none"></http>
-    <http pattern="/user/*.do" security="none"></http>
+    <http pattern="/index.do" security="none"/>
+    <http pattern="/search.do" security="none"/>
+    <http pattern="/register.html" security="none"/>
+    <http pattern="/user/*.do" security="none"/>
+    <http pattern="/wxpay/notify.do" security="none"/>
 
 </beans:beans>

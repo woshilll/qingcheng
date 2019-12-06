@@ -114,7 +114,7 @@
                 <ul class="payType">
                     <li><img src="./img/_/pay1.jpg"></li>
                     <li><img src="./img/_/pay2.jpg"></li>
-                    <li><img src="./img/_/pay3.jpg"></li>
+                    <li @click="wxPay()"><img src="./img/_/pay3.jpg"></li>
                     <li><img src="./img/_/pay4.jpg"></li>
                     <li><img src="./img/_/pay5.jpg"></li>
 
@@ -313,7 +313,12 @@
 		created() {
         	this.ordersn = getQueryString('ordersn');
         	this.money = getQueryString('money');
-		}
+		},
+        methods:{
+            wxPay(){
+                location.href = 'weixinpay.html?orderId=' + this.ordersn;
+            }
+        }
     })
 </script>
 

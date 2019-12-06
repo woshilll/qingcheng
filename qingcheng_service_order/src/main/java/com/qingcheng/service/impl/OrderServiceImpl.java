@@ -298,6 +298,38 @@ public class OrderServiceImpl implements OrderService {
 
     }
 
+    @Override
+    public void updatePayStatus(String orderId, String transactionId) {
+        Order order = orderMapper.selectByPrimaryKey(orderId);
+        //订单存在且显示未支付
+        if (order != null && "0".equals(order.getPayStatus())) {
+            //设置支付状态
+            order.setPayStatus("1");
+            //设置订单状态
+            order.setOrderStatus("1");
+            //设置订单更新时间
+            order.setUpdateTime(new Date());
+            //设置支付时间
+            order.setPayTime(new Date());
+            //设置支付流水号
+            order.setTransactionId(transactionId);
+            //更新
+            orderMapper.updateByPrimaryKeySelective(order);
+
+            //记录日志信息
+            OrderLog orderLog = new OrderLog();
+            orderLog.setId(idWorker.nextId() + "");
+            //操作人员  系统
+            orderLog.setOperater("system");
+            orderLog.setOrderId(orderId);
+            orderLog.setPayStatus("1");
+            orderLog.setOperateTime(new Date());
+            orderLog.setOrderStatus("1");
+            orderLog.setRemarks("支付流水号"+transactionId);
+            orderLogMapper.insert(orderLog);
+        }
+    }
+
     /**
      * 构建查询条件
      *
